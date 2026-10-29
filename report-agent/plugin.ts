@@ -52,7 +52,7 @@ export function apply(ctx: Context, config: Config): void {
       output: { type: 'string', enum: ['report','presentation'], description: 'report 导出文档；presentation 另外生成可编辑 PPTX 和离线 HTML 演示。用户要求 PPT 或网页演示时选 presentation。' },
       image_ids: { type: 'array', items: { type: 'string' }, description: '最多四张已经通过 fetch_image 获取、且与主题有关的配图编号；不能编造，图片只作示意' },
       web_urls: { type: 'array', items: { type: 'string' }, description: '联网开启后，选择已经通过网络工具阅读正文的相关网页，作为报告补充来源；不能提供未经读取的 URL' },
-      style: { type: 'string', enum: ['business', 'research', 'brief'], description: 'business 商务汇报；research 研究分析；brief 精简纪要' },
+      style: { type: 'string', enum: ['business', 'research', 'brief'], description: 'business 移动蓝商务；research 杂志研究；brief 深色科技' },
       requirements: { type: 'string', description: '用户在对话中提出的要求' },
       sections: { type: 'array', items: { type: 'string' }, description: '可选的章节标题；用户未指定时使用默认结构' },
     },
@@ -65,7 +65,7 @@ export function apply(ctx: Context, config: Config): void {
       if (!Array.isArray(chapterTitles) || chapterTitles.some(item => typeof item !== 'string')) throw new Error('报告大纲暂不可用')
       const style = args.style ?? 'business'
       const asOf = args.as_of ?? new Date().toLocaleDateString('sv-SE', {timeZone:'Asia/Shanghai'})
-      const styleNames = { business: '商务汇报', research: '研究分析', brief: '精简纪要' }
+      const styleNames = { business: '移动蓝商务', research: '杂志研究', brief: '深色科技' }
       const approved = await waitForReportApproval(() => ctx.userQuestions.ask({
         questions: [{ id: 'report-confirm', header: '生成前确认',
           question: `《${args.title}》\n大纲：${chapterTitles.join('；')}\n样式：${styleNames[style]}；输出：${args.output === 'presentation' ? '可编辑 PPT 与网页演示，同时保留文档' : 'Word 与 HTML 文档'}；配图：${args.image_ids?.length ?? 0} 张；研究截止要求：${asOf}。是否按此生成待核对初稿？`,

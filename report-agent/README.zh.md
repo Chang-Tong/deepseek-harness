@@ -12,11 +12,11 @@
 
 ## 技能与真人确认
 
-预设只挂载自带的 report-drafting、content-planning、style-selection、presentation-skill、frontend-slides、image-sourcing 六组技能目录。流程为明确用途与读者、查资料及缺口、拟定大纲、选择商务汇报/研究分析/精简纪要样式。原生提问工具处理分步选择，已给出的信息不反复询问。shell 和通用文件系统工具继续禁用。
+预设只挂载自带的 report-drafting、content-planning、style-selection、visual-composition、presentation-skill、frontend-slides、image-sourcing 七组技能目录。流程为明确用途与读者、查资料及缺口、拟定大纲、选择移动蓝商务/杂志研究/深色科技样式。原生提问工具处理分步选择，已给出的信息不反复询问。shell 和通用文件系统工具继续禁用。
 
 提交报告任务前，report_generate 直接等待原生 userQuestions 的真人回答，卡片展示标题、完整大纲和样式。只有明确批准才提交任务；选择修改、取消或尚未回答都不创建任务。等待用户不受写作超时限制，批准后才开始限时生成。提交后取消只停止等待，已提交报告仍保留。报告工具把当次请求的 provider/model 路由传给后台写作器。
 
-后端保存证据快照、任务、来源追溯、数字/引用检查与 Word/HTML/Markdown 导出及可选 PPTX、HTML 演示，仅对 draft_ready 返回链接。行业研究、工作汇报、年度总结、产品方案、竞品分析是内容结构；商务汇报、研究分析、精简纪要会实际改变导出样式。这些是通用模板，不代表已精确复刻上传的参考报告。
+后端保存证据快照、任务、来源追溯、数字/引用检查与 Word/HTML/Markdown 导出及可选 PPTX、HTML 演示，仅对 draft_ready 返回链接。行业研究、工作汇报、年度总结、产品方案、竞品分析是内容结构；business 移动蓝商务、research 杂志研究、brief 深色科技会实际改变导出样式；Word 保留相应的文档格式。这些是通用模板，不代表已精确复刻上传的参考报告。
 
 ## 模型体验
 
@@ -41,4 +41,4 @@ node node_modules/typescript/bin/tsc -p report-agent/tsconfig.check.json
 
 空白对话显示工作汇报、行业研究、年度总结、制作 PPT、产品方案、竞品分析六个本地化按钮。点击填入可编辑的开场请求，不自动发送；已有的自定义草稿继续保留。所有场景共用输入框和最终确认流程。
 
-两个演示技能分别适配 MIT 许可的 [frontend-slides](https://github.com/zarazhangrui/frontend-slides) 和 [presentation-skill](https://github.com/siril9/presentation-skill)，保留上游版本、原始说明和许可。它们调用 report_generate 并指定 output=presentation。后端以 PptxGenJS 输出可编辑文字/形状，以固定画布输出内嵌配图的离线 HTML 演示；未安装完整上游的渲染、图表、自由脚本、公开发布和浏览器正文编辑功能。图片下载共用显式联网开关，保存来源、哈希、采集时间，通过认证预览路由展示；图片只作示意，不作事实证据。
+演示适配技能分别参考 MIT 许可的 [frontend-slides](https://github.com/zarazhangrui/frontend-slides) 和 [presentation-skill](https://github.com/siril9/presentation-skill)，保留上游版本、原始说明和许可。visual-composition 还参考了固定 MIT 版本的[归藏 PPT v1.1.0](https://github.com/op7418/guizang-ppt-skill/tree/v1.1.0)。它们调用 report_generate 并指定 output=presentation。后端共用元素定位场景，输出 PptxGenJS 可编辑文字/形状和离线 HTML 演示。内容决定封面、导览、指标、能力清单、分析、观点、阅读、缺口、图文和引用版式；原始段落与引用保留在报告归档和幻灯片备注中。长篇 HTML 带响应式阅读目录、有引用的研究要点和来源区。未安装完整上游的渲染、图表、自由脚本、公开发布和浏览器正文编辑功能。图片下载共用显式联网开关，保存来源、哈希、采集时间，通过认证预览路由展示；图片只作示意，不作事实证据。

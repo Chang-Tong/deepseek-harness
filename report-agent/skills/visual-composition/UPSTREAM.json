@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/op7418/guizang-ppt-skill",
+  "commit": "3652b3c7aa21492717945b6063ae278030101dd8",
+  "tag": "v1.1.0",
+  "license": "MIT",
+  "integration": "Design principles adapted into the shared editable-PPT/HTML renderer; upstream WebGL runtime and locked layouts are not installed.",
+  "files": {
+    "references/guizang-v1.1.txt": "e34f087fe6b305a1eeef3c0e55f86a76c51d05f4b9e70a56fcba13fe995d4e7e"
+  }
+}
