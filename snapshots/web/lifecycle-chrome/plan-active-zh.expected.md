@@ -14,10 +14,10 @@
 - button "设置"
 - banner:
   - button "打开右侧边栏"
-- text: 探索未至之境 预览版
+- text: 让资料，成为有依据的报告 预览版
 - button "选择工作区": workspace
 - button "标准模式"
-- textbox "描述你想要构建的内容, / 调用指令, @ 文件或对话"
+- textbox "描述你需要的报告，或上传参考资料…"
 - button "添加文件或调用指令"
 - button "访问模式，当前：工作区内修改": 工作区内修改
 - button "计划模式已开启，按下关闭": 计划

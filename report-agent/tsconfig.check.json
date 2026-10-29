@@ -26,6 +26,18 @@
       ],
       "@deepseek-ai/dsh-workspace": [
         "../packages/workspace/workspace/lib/types/index.d.ts"
+      ],
+      "@deepseek-ai/dsh-client-connection": [
+        "../packages/client/connection/lib/types/index.d.ts"
+      ],
+      "@deepseek-ai/dsh-agent": [
+        "../packages/core/agent/lib/types/index.d.ts"
+      ],
+      "@deepseek-ai/dsh-user-questions": [
+        "../packages/interaction/user-questions/lib/types/index.d.ts"
+      ],
+      "@deepseek-ai/dsh-system-prompt": [
+        "../packages/core/system-prompt/lib/types/index.d.ts"
       ]
     }
   },

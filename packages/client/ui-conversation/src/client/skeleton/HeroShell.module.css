@@ -230,3 +230,5 @@
   line-height: 18px;
   color: var(--dsw-alias-state-error-primary);
 }
+
+:global(html[data-report-brand='cmcc']) .previewBadge { display: none; }

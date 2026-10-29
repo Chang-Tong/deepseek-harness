@@ -3,14 +3,23 @@
 # After editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write report-agent/README.md
 /conversational-report-assistant:
-  en: 1387bac63739be8b
-  zh: 66170d529669334c
+  en: 1eefa16496fb6e2b
+  zh: 0fab176d88eccb97
 /conversational-report-assistant/run:
-  en: d26e95de0e94855b
-  zh: 6318d6fd1f476818
-/conversational-report-assistant/configuration-and-model-experience:
-  en: 9b712d767c9270b4
-  zh: f9df8396d04c76da
+  en: 5020524ba8f99a58
+  zh: e71a41bcd72ee449
+/conversational-report-assistant/skills-and-human-confirmation:
+  en: d62e71095a4378c9
+  zh: a7f92a7b5c8caabe
+/conversational-report-assistant/model-experience:
+  en: 66a1e8da6e01323a
+  zh: 142532202ce490f7
 /conversational-report-assistant/checks-and-limits:
-  en: 5bf1bb09d2df6d2f
-  zh: a4aa022ff4394f91
+  en: 009919a72643b2da
+  zh: a7675fb750b56c88
+/conversational-report-assistant/optional-networking:
+  en: c505b5336711185a
+  zh: 4a0ac7f2d7064355
+/conversational-report-assistant/scenario-starters-and-presentation-adapters:
+  en: 776f2076f533bd87
+  zh: 4b5ae5682c697ec9

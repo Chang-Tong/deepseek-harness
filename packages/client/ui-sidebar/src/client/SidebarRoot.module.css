@@ -612,3 +612,8 @@
     animation: none;
   }
 }
+
+/* The dedicated report lockup has a bilingual wordmark taller than the default mark. */
+:global(html[data-report-brand='cmcc']) .brandIdentity,
+:global(html[data-report-brand='cmcc']) .brandName { height: 40px; }
+:global(html[data-report-brand='cmcc']) .brandMark { display: none; }

@@ -64,6 +64,15 @@ export class ReportApi {
     if (!info.isFile() || info.size > maximum) throw new Error('附件不是文件或超过上传大小限制')
     const data = await readFile(path, { signal }), form = new FormData()
     form.append('file', new Blob([new Uint8Array(data)]), basename(path))
-    return record(await this.request('/api/documents', signal, form))
+    let result = record(await this.request('/api/documents', signal, form))
+    while (['pending', 'processing', 'running'].includes(String(result.parse_status ?? ''))) {
+      await delay(this.pollIntervalMs, undefined, { signal })
+      const listing = record(await this.request('/api/documents?keyword=' + encodeURIComponent(basename(path)), signal))
+      if (!Array.isArray(listing.items)) throw new Error('资料状态暂不可用')
+      const found = listing.items.map(record).find(item => item.id === result.id)
+      if (found) result = found
+    }
+    if (result.parse_status === 'failed') throw new Error('资料解析未完成，请检查文件或换一个版本')
+    return result
   }
 }

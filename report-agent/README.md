@@ -2,36 +2,43 @@
 
 English | [中文](README.zh.md)
 
-This optional Web overlay uses the native Harness composer, attachments and Session history. A report preset exposes three tools: `knora_search` retrieves saved source excerpts, `knora_import_file` imports a stored chat attachment, and `report_generate` waits for a checked draft and returns download links. Users describe their request in conversation; the agent supplies the report API's structured arguments.
+This optional Web preset reuses the native Harness composer, attachments, model selector and Session history. It is a dedicated source-grounded assistant: every substantive question first uses the official `@wxg-prc-cpg/dsh-weknora@0.1.0` search/read tools. This plugin calls WeKnora REST directly; no additional MCP wrapper is introduced. Normal replies and activity cards use business language, while original tool records remain in Session history.
 
 ## Run
 
-Complete the [Harness source setup](../README.md#run-from-source), configure a working model provider, and run a compatible report API on loopback. The current backend is [industry-report-agent](https://github.com/Chang-Tong/industry-report-agent); it owns WeKnora credentials, evidence snapshots, report jobs, checks and exports. The overlay contains no credentials.
+Build the [Harness source checkout](../README.md#run-from-source), install the official WeKnora plugin in the profile, and run the [industry-report-agent backend](https://github.com/Chang-Tong/industry-report-agent) on loopback. Its launcher prepares an isolated profile, supplies runtime credentials and opens the authenticated chat address. It also provides a Docker image recipe and offline export instructions. The fork contains no credentials or private documents.
 
-Generate an optional patch inside your Harness home, replacing the project path with an existing directory:
+The overlay consumes `WEKNORA_BASE_URL`, `WEKNORA_API_KEY` and `WEKNORA_KNOWLEDGE_BASE_IDS` through runtime environment expressions. The report plugin accepts `apiUrl`, `publicUrl`, `attachmentsDirectory`, polling/timeout limits and an upload size limit. Internal report requests use loopback only; artifact links use an authenticated same-origin download route. Attachment import is confined to the configured native storage root and waits for parsing before returning success.
 
-```sh
-node report-agent/overlay.mjs --workspace /path/to/project \
-  --attachments "$DSH_HOME/attachments/v1/files" \
-  --api-url http://127.0.0.1:18087 > "$DSH_HOME/report.patch.yml"
-dsh --profile web --patch "$DSH_HOME/report.patch.yml" --host 127.0.0.1 --port 18085
-```
+## Skills and human confirmation
 
-Use the authenticated address printed by Harness. The report project also provides a local launcher that prepares an isolated profile and opens that address automatically. The overlay initializes the first-use workspace and disables coding-specific composer controls; it retains the native file picker and chat history. All plugin paths are resolved from this checkout.
+The preset mounts only its six bundled skill roots: report-drafting, content-planning, style-selection, presentation-skill, frontend-slides and image-sourcing. It clarifies purpose and audience, retrieves source coverage and gaps, proposes an outline and selects a business, research or brief style. The native question tool handles incremental choices; previously supplied decisions are not repeatedly requested. Shell and general filesystem tools remain disabled.
 
-## Configuration and model experience
+Before posting any report job, report_generate directly waits for a native userQuestions answer showing the title, complete outline and style. Only an unambiguous human approval permits submission. Choosing an edit, canceling or leaving the question unanswered never creates a job. Waiting for the human has no writer timeout; bounded generation starts after approval. Canceling later stops waiting but preserves any report already submitted. The report tool captures the current request's provider/model route for the backend writer.
 
-The tool plugin accepts `apiUrl`, `attachmentsDirectory`, `pollIntervalMs`, `timeoutMs` and `maxUploadBytes`. It only connects to HTTP loopback endpoints. The attachment path must resolve inside the configured attachment directory; files outside that directory are rejected before upload. No shell or general filesystem tool is exposed by the report preset.
+The backend owns evidence snapshots, jobs, original file/chunk identities and hashes, number/citation checks and Word/HTML/Markdown exports plus optional PPTX and HTML slides. It returns links only for draft_ready. Industry, work, annual, product and comparison are content structures; business, research and brief alter actual export styling. These are generic templates, not a promise of exact reproduction of an uploaded reference report.
 
-Search returns a saved run identifier, document and chunk identities, excerpts, real locators and quality flags. A retrieval result is a candidate source, not an independently verified fact. Generation returns the backend's actual terminal state and only supplies download links for `draft_ready`. Failed or incomplete work must not be described as a completed final report. Cancellation stops the tool's polling; a report already published to the backend remains there.
+## Model Experience
 
-The report persona directs the model to retrieve before answering, use the generation tool for reports, and disclose omitted content. The tool catalog and persona remain stable between turns; returned excerpts and drafts increase conversation context and are recorded by Harness. The optional overlay does not change the agent loop or the released Session data types.
+The report persona, compact skill catalog and registered tools shape model requests. Skill bodies are loaded on demand; source excerpts and drafts are recorded in conversation context. Human confirmation is implemented in the tool execution path, not inferred from model-generated arguments. The overlay does not change the agent loop or released Session event types. The brand package contributes no model requests.
 
 ## Checks and limits
 
 ```sh
-node --import tsx/esm --test report-agent/api.test.ts
+node --import tsx/esm --test report-agent/api.test.ts report-agent/confirmation.test.ts
 node node_modules/typescript/bin/tsc -p report-agent/tsconfig.check.json
 ```
 
-The focused transport tests cover polling, terminal failures, cancellation, local-endpoint validation and attachment confinement. The native Web flow also needs a live model, report API and WeKnora for end-to-end verification. Report checks do not establish semantic truth, current publication dates or exact PDF page numbers; unresolved source details remain visible in the draft. The overlay is for a trusted local user and does not add public multi-user authentication or authorization.
+Focused tests cover polling, failure, cancellation, attachment confinement, parser readiness and human approval. Live verification additionally needs WeKnora, the report API and a configured model. Number/citation checks do not establish semantic truth or source freshness; incomplete work remains a review draft. The deployment targets a trusted single user and retains native authentication.
+
+## Optional networking
+
+The input toolbar provides an explicit Web search switch, initially closed on every process start. A host transport gate blocks every web MCP call while closed and propagates cancellation when disabled. The official Harness MCP bridge runs a pinned [web-mcp](https://github.com/Chang-Tong/web-mcp) stdio server exposing search, page fetch, image discovery and bounded PNG/JPEG download; no new port or secondary summarization model is required. The host contributes current switch status through the report_network_status prompt variable.
+
+When enabled, the assistant still queries WeKnora first and can supplement it with public sources. Only actually fetched page bodies selected for the current report enter its evidence snapshot; a search snippet alone is insufficient. Original URLs, capture times and text hashes are retained. Private network destinations and redirects are rejected by the bundled fetch adapter. The switch is shared across this single-user runtime; it is not a per-user permission system. The UI refreshes its state on focus.
+
+## Scenario starters and presentation adapters
+
+A blank conversation shows six localized starter buttons: work update, industry research, annual review, slides, product proposal and competitor analysis. Clicking inserts an editable opening request without sending it. Existing custom draft text is retained. The same composer and confirmation flow handle all scenarios.
+
+The two presentation skills are MIT-licensed adaptations of [frontend-slides](https://github.com/zarazhangrui/frontend-slides) and [presentation-skill](https://github.com/siril9/presentation-skill); each retains its upstream revision, original instructions and license. They route through report_generate with output=presentation. The backend uses PptxGenJS for editable text/shapes and fixed-stage offline HTML with embedded illustrations. The complete upstream rendering, charting, arbitrary scripting, public deployment and in-browser editing features are not installed. Image downloads share the explicit network gate, save source/hash/time metadata and use an authenticated preview route; pictures are illustrations, never evidence.

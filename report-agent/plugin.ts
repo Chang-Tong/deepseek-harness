@@ -1,17 +1,22 @@
 /** Knowledge retrieval and checked report generation inside the native Harness conversation. */
 import { basename } from 'node:path'
+import type {} from '@deepseek-ai/dsh-agent'
+import type {} from '@deepseek-ai/dsh-user-questions'
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import { field, record, ReportApi } from './api.ts'
+import { waitForReportApproval } from './confirmation.ts'
+import type {} from './network.ts'
 
 /** Plugin identifier. */
 export const name = 'industry-report-chat'
 /** Runtime services consumed by the tools. */
-export const inject = ['tools']
+export const inject = ['tools', 'userQuestions', 'reportNetwork']
 /** Deployment values; credentials stay in the report service. */
 export interface Config {
   apiUrl: string
+  publicUrl: string
   attachmentsDirectory: string
   pollIntervalMs: number
   timeoutMs: number
@@ -19,58 +24,64 @@ export interface Config {
 }
 /** Deployment configuration schema. */
 export const Config: z<Config> = z.object({
-  apiUrl: z.string().required(), attachmentsDirectory: z.string().required(),
+  apiUrl: z.string().required(), publicUrl: z.string().required(), attachmentsDirectory: z.string().required(),
   pollIntervalMs: z.number().min(10).default(1000), timeoutMs: z.number().min(1000).default(240000),
   maxUploadBytes: z.number().min(1).default(32 * 1024 * 1024),
 })
 const reportFields = {
   id: { type: 'string' }, status: { type: 'string' }, message: { type: 'string' },
-  word_url: { type: 'string' }, html_url: { type: 'string' }, markdown_url: { type: 'string' }, content: { type: 'string' },
+  word_url: { type: 'string' }, html_url: { type: 'string' }, markdown_url: { type: 'string' }, pptx_url: { type: 'string' }, slides_url: { type: 'string' }, content: { type: 'string' },
 } as const
 
 /** Install tools in the report agent's preset scope. @param ctx - Scoped Harness context. @param config - Local service and attachment settings. */
 export function apply(ctx: Context, config: Config): void {
   const api = new ReportApi(config.apiUrl, config.pollIntervalMs)
+  let selectedRoute: { provider: string; model: string } | undefined
+  ctx.on('agent/request', async (_payload, next) => {
+    const request = await next()
+    selectedRoute = { provider: request.provider, model: request.model }
+    return request
+  })
   const signalFor = (signal: AbortSignal) => AbortSignal.any([signal, AbortSignal.timeout(config.timeoutMs)])
   ctx.tools.register(defineTool({
-    name: 'knora_search', description: '检索现有 WeKnora 资料库，返回原文证据、文件名和知识/分块编号。回答资料问题前必须检索；有引用不代表事实已核验。',
-    parameters: { query: { type: 'string', required: true, description: '要检索的主题或问题' } },
-    output: {
-      schema: { type: 'object', properties: {
-        run_id: { type: 'string' }, status: { type: 'string' }, evidence: { type: 'array', items: { type: 'object', properties: {
-          id: { type: 'string' }, document: { type: 'string' }, knowledge_id: { type: 'string' }, chunk_id: { type: 'string' },
-          excerpt: { type: 'string' }, locator: { type: 'string' }, quality_flags: { type: 'string' },
-        }, additionalProperties: false } },
-      }, additionalProperties: false },
-      render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }],
-    },
-    async execute(args, exec) {
-      const result = record(await api.request('/api/knowledge/search', signalFor(exec.signal), { query: args.query }))
-      if (!Array.isArray(result.evidence)) throw new Error('检索证据列表无效')
-      return { run_id: field(result, 'run_id'), status: field(result, 'status'), evidence: result.evidence.map((item: unknown) => {
-        const hit = record(item)
-        return { id: field(hit, 'id'), document: field(hit, 'source_path'), knowledge_id: field(hit, 'knowledge_id'),
-          chunk_id: field(hit, 'chunk_id'), excerpt: field(hit, 'content'), locator: JSON.stringify(hit.source_locators ?? null), quality_flags: JSON.stringify(hit.quality_flags) }
-      }) }
-    },
-  }))
-  ctx.tools.register(defineTool({
-    name: 'report_generate', description: '用户要求生成报告时调用。自动检索、按章写作、核对数字和引用、导出 Word/HTML/Markdown。主题明确即可生成，不要求用户填写结构化表单。只返回待核对初稿。',
+    name: 'report_generate', description: '用户要求生成报告时调用。本工具自带最终大纲与样式确认卡片，请直接调用，不要用 ask_user_question 重复确认生成。自动检索、按章写作、核对数字和引用、导出 Word/HTML/Markdown。主题明确即可生成，不要求用户填写结构化表单。只返回待核对初稿。',
     parameters: {
+      as_of: { type: 'string', description: '用户明确要求的研究截止日期，格式 YYYY-MM-DD；未提供时按当前北京时间' },
       title: { type: 'string', required: true, description: '从对话整理的报告主题' },
+      template: { type: 'string', enum: ['industry', 'work', 'annual', 'product', 'comparison'], description: 'industry 行业研究，work 工作汇报，annual 年度总结，product 产品方案，comparison 竞品分析；默认 industry' },
+      output: { type: 'string', enum: ['report','presentation'], description: 'report 导出文档；presentation 另外生成可编辑 PPTX 和离线 HTML 演示。用户要求 PPT 或网页演示时选 presentation。' },
+      image_ids: { type: 'array', items: { type: 'string' }, description: '最多四张已经通过 fetch_image 获取、且与主题有关的配图编号；不能编造，图片只作示意' },
+      web_urls: { type: 'array', items: { type: 'string' }, description: '联网开启后，选择已经通过网络工具阅读正文的相关网页，作为报告补充来源；不能提供未经读取的 URL' },
+      style: { type: 'string', enum: ['business', 'research', 'brief'], description: 'business 商务汇报；research 研究分析；brief 精简纪要' },
       requirements: { type: 'string', description: '用户在对话中提出的要求' },
       sections: { type: 'array', items: { type: 'string' }, description: '可选的章节标题；用户未指定时使用默认结构' },
     },
     output: { schema: { type: 'object', properties: reportFields, additionalProperties: false },
       render: (_args, value) => [{ type: 'text', text: JSON.stringify(value) }] },
     async execute(args, exec) {
+      const options = record(await api.request('/api/report-options', exec.signal))
+      const template = record(record(options.templates)[args.template ?? 'industry'])
+      const chapterTitles = args.sections ?? template.sections
+      if (!Array.isArray(chapterTitles) || chapterTitles.some(item => typeof item !== 'string')) throw new Error('报告大纲暂不可用')
+      const style = args.style ?? 'business'
+      const asOf = args.as_of ?? new Date().toLocaleDateString('sv-SE', {timeZone:'Asia/Shanghai'})
+      const styleNames = { business: '商务汇报', research: '研究分析', brief: '精简纪要' }
+      const approved = await waitForReportApproval(() => ctx.userQuestions.ask({
+        questions: [{ id: 'report-confirm', header: '生成前确认',
+          question: `《${args.title}》\n大纲：${chapterTitles.join('；')}\n样式：${styleNames[style]}；输出：${args.output === 'presentation' ? '可编辑 PPT 与网页演示，同时保留文档' : 'Word 与 HTML 文档'}；配图：${args.image_ids?.length ?? 0} 张；研究截止要求：${asOf}。是否按此生成待核对初稿？`,
+          options: [{ label: '按此生成', description: '开始查阅资料、撰写和校验' }, { label: '修改大纲', description: '先调整内容安排' }, { label: '调整样式', description: '先更换报告风格' }] }],
+        ...exec.agent === undefined ? {} : { agent: exec.agent }, signal: exec.signal,
+      }))
+      if (!approved) return { id: '', status: 'needs_confirmation', message: '用户尚未确认生成；请继续调整大纲或样式并再次确认，尚未创建报告。', word_url: '', html_url: '', markdown_url: '', pptx_url:'', slides_url:'', content: '' }
+      const webSources = ctx.reportNetwork.sources(exec.agent ? String(exec.agent.id) : '', args.web_urls ?? [])
+      const imageIds = ctx.reportNetwork.images(exec.agent ? String(exec.agent.id) : '', args.image_ids ?? [])
       const signal = signalFor(exec.signal)
-      const job = await api.generate({ title: args.title, brief: args.requirements ?? '', as_of: new Date().toLocaleDateString('sv-SE'),
-        ...args.sections === undefined ? {} : { sections: args.sections } }, signal)
+      const job = await api.generate({ title: args.title, brief: args.requirements ?? '', template: args.template ?? 'industry', output:args.output ?? 'report',image_ids:imageIds, style, web_sources: webSources, ...selectedRoute === undefined ? {} : { writer_selection: selectedRoute }, as_of: asOf,
+        sections: chapterTitles }, signal)
       const id = field(job, 'id'), status = field(job, 'status'), ready = status === 'draft_ready'
-      const base = `${api.base}/api/reports/${id}/report`
-      return { id, status, message: field(job, 'message'), word_url: ready ? `${base}.docx` : '',
-        html_url: ready ? `${base}.html` : '', markdown_url: ready ? `${base}.md` : '', content: ready ? await api.markdown(id, signal) : '' }
+      const download = (format: string) => `${config.publicUrl.replace(/\/$/, '')}/api/report-download?id=${id}&format=${format}`
+      return { id, status, message: field(job, 'message'), word_url: ready ? download('docx') : '',
+        html_url: ready ? download('html') : '', markdown_url: ready ? download('md') : '', pptx_url:ready && args.output === 'presentation' ? download('pptx') : '', slides_url:ready && args.output === 'presentation' ? download('slides') : '', content: ready ? await api.markdown(id, signal) : '' }
     },
   }))
   ctx.tools.register(defineTool({

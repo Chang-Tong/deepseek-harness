@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/siril9/presentation-skill",
+  "commit": "efd899c5ddf866af2ce0001c4c9340af775d4d55",
+  "license": "MIT",
+  "files": {
+    "references/upstream.md": "61cde674a8823f3e20a6a48a1c18bf02d2bc7a716fb30e0a915b715e0499b617",
+    "references/pptxgenjs.md": "c546b4ce1f99f947b37f781f149748df02ab2c133f82bf8a452d6eb96661b506",
+    "references/visual_qa_prompt.md": "0ea115b102cbad98b621ccc37c2afd2dd4433ec614bff404806af0209c38a435"
+  },
+  "integration": "Adapted SKILL.md for report_generate. Upstream CLI, public deployment, arbitrary code execution and multi-agent orchestration are not enabled. Deterministic PPTX uses PptxGenJS; HTML uses the fixed-stage CSS."
+}

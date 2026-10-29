@@ -52,12 +52,17 @@ test('attachment import sends stored bytes and rejects files outside its root', 
   let requests = 0
   const server = createServer(async (request, response) => {
     requests++
-    const chunks: Buffer[] = []
-    for await (const chunk of request) chunks.push(Buffer.from(chunk))
-    assert.match(Buffer.concat(chunks).toString(), /attachment-smoke/)
-    assert.equal(request.url, '/api/documents')
     response.setHeader('Content-Type', 'application/json')
-    response.end(JSON.stringify({ id: 'document', parse_status: 'pending' }))
+    if (request.method === 'POST') {
+      const chunks: Buffer[] = []
+      for await (const chunk of request) chunks.push(Buffer.from(chunk))
+      assert.match(Buffer.concat(chunks).toString(), /attachment-smoke/)
+      assert.equal(request.url, '/api/documents')
+      response.end(JSON.stringify({ id: 'document', parse_status: 'pending' }))
+    } else {
+      assert.equal(request.url, '/api/documents?keyword=sample.md')
+      response.end(JSON.stringify({ items: [{ id: 'document', parse_status: requests > 2 ? 'completed' : 'processing' }] }))
+    }
   })
   t.after(async () => { server.closeAllConnections(); await new Promise<void>(resolve => server.close(() => resolve())) })
   server.listen(0, '127.0.0.1')
@@ -68,5 +73,5 @@ test('attachment import sends stored bytes and rejects files outside its root', 
   const signal = AbortSignal.timeout(5000)
   assert.equal((await api.importFile(join(attachments, 'sample.md'), attachments, 1024, signal)).id, 'document')
   await assert.rejects(api.importFile(join(directory, 'outside.md'), attachments, 1024, signal))
-  assert.equal(requests, 1)
+  assert.equal(requests, 3)
 })

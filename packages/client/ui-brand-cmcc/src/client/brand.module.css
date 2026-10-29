@@ -1,0 +1,15 @@
+.wordmark { display: inline-flex; align-items: center; width: 188px; height: 40px; }
+.lockup { display: block; width: 188px; height: 40px; object-fit: cover; object-position: center; }
+.activity { display: flex; align-items: center; gap: 8px; padding: 6px 0; color: var(--dsw-alias-label-primary); font-size: 13px; }
+.activity small { color: var(--dsw-alias-label-secondary); font-size: 12px; }
+
+.network { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 9px; border: none; border-radius: var(--dsw-radius-sm); background: transparent; color: var(--dsw-alias-label-secondary); font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.network:hover { background: var(--dsw-alias-interactive-bg-hover); }
+.network[aria-checked='true'] { color: var(--dsw-alias-state-business-primary); background: var(--dsw-alias-interactive-bg-hover); }
+.network:focus-visible { outline: var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary)); outline-offset: 2px; }
+.network:disabled { cursor: wait; opacity: 0.6; }
+
+.starters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 0 2px 12px; }
+.starters .starter { border-radius: 999px; corner-shape: round; color: var(--dsw-alias-label-primary); padding: 5px 16px; height: 36px; font-size: 13px; white-space: nowrap; }
+.assetResult { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.fetchedImage { max-width: min(100%, 420px); max-height: 280px; object-fit: contain; border-radius: var(--dsw-radius-sm); }

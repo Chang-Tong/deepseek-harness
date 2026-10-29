@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/zarazhangrui/frontend-slides",
+  "commit": "9906a34d640d2111f724544cbc50f7f130569ae1",
+  "license": "MIT",
+  "files": {
+    "references/upstream.md": "832994fe1dfcce2aa7ceca9a1b7b708eca94becef242713999855f4e946cf4d5",
+    "references/STYLE_PRESETS.md": "b0093ae6f9c295e561c7d4a9ddf69d0edfd2810b1721ba1c2022a1ad9681c82c",
+    "references/viewport-base.css": "7424eb3fca809d85eedb3019a7b5bff571dc553c7b73b02120d068e12b2a6a03",
+    "references/html-template.md": "893ab49200ed5c3186d3b031333f5b61916b179dad2dafd5572ff8f66cd0b91a",
+    "references/animation-patterns.md": "1b7b7409893b68c09effb04f20a4603a5168e4956d76c3999c2ba8f86c4bbc8f"
+  },
+  "integration": "Adapted SKILL.md for report_generate. Upstream CLI, public deployment, arbitrary code execution and multi-agent orchestration are not enabled. Deterministic PPTX uses PptxGenJS; HTML uses the fixed-stage CSS."
+}
