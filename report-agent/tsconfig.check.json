@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": [
+      "ES2023",
+      "DOM"
+    ],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "@deepseek-ai/cordis": [
+        "../vendor/cordis/lib/types/index.d.ts"
+      ],
+      "@deepseek-ai/schemastery": [
+        "../vendor/schemastery/lib/types/index.d.ts"
+      ],
+      "@deepseek-ai/dsh-tools": [
+        "../packages/core/tools/lib/types/index.d.ts"
+      ],
+      "@deepseek-ai/dsh-workspace": [
+        "../packages/workspace/workspace/lib/types/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "*.ts"
+  ]
+}
