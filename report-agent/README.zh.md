@@ -12,6 +12,8 @@
 
 ## 技能与真人确认
 
+保留原生模型设置：用户可以编辑地址、协议、API 密钥和模型目录，或添加自定义路由。输入框的模型选择也决定报告写作。重新生成预设时保留模型设置；原生凭据仍为只写，私有路由快照只保存引用，不复制密钥。隔离写作器每次使用当前凭据。
+
 预设只挂载自带的 report-drafting、content-planning、style-selection、visual-composition、presentation-skill、frontend-slides、image-sourcing 七组技能目录。流程为明确用途与读者、查资料及缺口、拟定大纲、选择移动蓝商务/杂志研究/深色科技样式。原生提问工具处理分步选择，已给出的信息不反复询问。shell 和通用文件系统工具继续禁用。
 
 提交报告任务前，report_generate 直接等待原生 userQuestions 的真人回答，卡片展示标题、完整大纲和样式。只有明确批准才提交任务；选择修改、取消或尚未回答都不创建任务。等待用户不受写作超时限制，批准后才开始限时生成。提交后取消只停止等待，已提交报告仍保留。报告工具把当次请求的 provider/model 路由传给后台写作器。
@@ -25,7 +27,7 @@
 ## 检查与限制
 
 ```sh
-node --import tsx/esm --test report-agent/api.test.ts report-agent/confirmation.test.ts
+node --import tsx/esm --test report-agent/api.test.ts report-agent/confirmation.test.ts report-agent/model-routes.test.ts
 node node_modules/typescript/bin/tsc -p report-agent/tsconfig.check.json
 ```
 

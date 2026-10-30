@@ -12,6 +12,8 @@ The overlay consumes `WEKNORA_BASE_URL`, `WEKNORA_API_KEY` and `WEKNORA_KNOWLEDG
 
 ## Skills and human confirmation
 
+Models settings remain enabled: users can edit endpoint, protocol, API key and model catalog or add a custom route. The composer selection also determines report writing. Model settings survive preset regeneration; native credentials stay write-only and private route snapshots contain only references, never copied keys. The isolated writer reads current credentials for each operation.
+
 The preset mounts only its seven bundled skill roots: report-drafting, content-planning, style-selection, visual-composition, presentation-skill, frontend-slides and image-sourcing. It clarifies purpose and audience, retrieves source coverage and gaps, proposes an outline and selects a business, research or brief style. The native question tool handles incremental choices; previously supplied decisions are not repeatedly requested. Shell and general filesystem tools remain disabled.
 
 Before posting any report job, report_generate directly waits for a native userQuestions answer showing the title, complete outline and style. Only an unambiguous human approval permits submission. Choosing an edit, canceling or leaving the question unanswered never creates a job. Waiting for the human has no writer timeout; bounded generation starts after approval. Canceling later stops waiting but preserves any report already submitted. The report tool captures the current request's provider/model route for the backend writer.
@@ -25,7 +27,7 @@ The report persona, compact skill catalog and registered tools shape model reque
 ## Checks and limits
 
 ```sh
-node --import tsx/esm --test report-agent/api.test.ts report-agent/confirmation.test.ts
+node --import tsx/esm --test report-agent/api.test.ts report-agent/confirmation.test.ts report-agent/model-routes.test.ts
 node node_modules/typescript/bin/tsc -p report-agent/tsconfig.check.json
 ```
 

@@ -2,22 +2,26 @@
 import { basename } from 'node:path'
 import type {} from '@deepseek-ai/dsh-agent'
 import type {} from '@deepseek-ai/dsh-user-questions'
+import type {} from '@deepseek-ai/dsh-settings'
+import type { CredentialRef } from '@deepseek-ai/dsh-credentials'
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import { field, record, ReportApi } from './api.ts'
 import { waitForReportApproval } from './confirmation.ts'
+import { saveModelRoute } from './model-routes.ts'
 import type {} from './network.ts'
 
 /** Plugin identifier. */
 export const name = 'industry-report-chat'
 /** Runtime services consumed by the tools. */
-export const inject = ['tools', 'userQuestions', 'reportNetwork']
+export const inject = ['tools', 'userQuestions', 'reportNetwork', 'settings', 'credentials']
 /** Deployment values; credentials stay in the report service. */
 export interface Config {
   apiUrl: string
   publicUrl: string
   attachmentsDirectory: string
+  modelRoutesDirectory: string
   pollIntervalMs: number
   timeoutMs: number
   maxUploadBytes: number
@@ -25,6 +29,7 @@ export interface Config {
 /** Deployment configuration schema. */
 export const Config: z<Config> = z.object({
   apiUrl: z.string().required(), publicUrl: z.string().required(), attachmentsDirectory: z.string().required(),
+  modelRoutesDirectory: z.string().required(),
   pollIntervalMs: z.number().min(10).default(1000), timeoutMs: z.number().min(1000).default(240000),
   maxUploadBytes: z.number().min(1).default(32 * 1024 * 1024),
 })
@@ -73,6 +78,9 @@ export function apply(ctx: Context, config: Config): void {
         ...exec.agent === undefined ? {} : { agent: exec.agent }, signal: exec.signal,
       }))
       if (!approved) return { id: '', status: 'needs_confirmation', message: '用户尚未确认生成；请继续调整大纲或样式并再次确认，尚未创建报告。', word_url: '', html_url: '', markdown_url: '', pptx_url:'', slides_url:'', content: '' }
+      if (selectedRoute) await saveModelRoute(config.modelRoutesDirectory, selectedRoute, {
+        describe: () => ctx.settings.describe(), resolve: reference => ctx.credentials.resolve(reference as CredentialRef),
+      })
       const webSources = ctx.reportNetwork.sources(exec.agent ? String(exec.agent.id) : '', args.web_urls ?? [])
       const imageIds = ctx.reportNetwork.images(exec.agent ? String(exec.agent.id) : '', args.image_ids ?? [])
       const signal = signalFor(exec.signal)

@@ -25,10 +25,11 @@ export function reportOverlay(options) {
         { id: 'report-skill-loader', name: '@deepseek-ai/dsh-tool-skill' },
         { id: 'report-questions', name: '@deepseek-ai/dsh-tool-ask-user' },
         { id: 'report-tools', name: resolve(pluginDirectory, 'plugin.' + (options.pluginExtension ?? 'ts')), config: { apiUrl: options.apiUrl, publicUrl: options.publicUrl ?? 'http://127.0.0.1:18085',
-          attachmentsDirectory: options.attachments, pollIntervalMs: 1000, timeoutMs: 240000, maxUploadBytes: 33554432 } },
+          attachmentsDirectory: options.attachments, modelRoutesDirectory: resolve(options.attachments, '../../..', 'report-model-routes'), pollIntervalMs: 1000, timeoutMs: 240000, maxUploadBytes: 33554432 } },
       ] } },
     ] },
-    ...['ui-permission', 'ui-plan', 'ui-goal', 'ui-agent-preset', 'ui-open-in-app', 'ui-plugin-manager', 'ui-cordis', 'ui-trajectory', 'ui-settings-models'].map(id => ({ id, disabled: true })),
+    { id: 'ui-settings-models', disabled: false },
+    ...['ui-permission', 'ui-plan', 'ui-goal', 'ui-agent-preset', 'ui-open-in-app', 'ui-plugin-manager', 'ui-cordis', 'ui-trajectory'].map(id => ({ id, disabled: true })),
   ]
 }
 
