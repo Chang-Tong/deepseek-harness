@@ -333,8 +333,8 @@
       name: '@deepseek-ai/dsh-client-ui-chat'
 
     # Official occupants for the generic sidebar and conversation brand slots.
-    - id: ui-brand-cmcc
-      name: '@deepseek-ai/dsh-client-ui-brand-cmcc'
+    - id: ui-brand-report
+      name: '@deepseek-ai/dsh-client-ui-brand-report'
       disabled: true
     - id: ui-brand-official
       name: '@deepseek-ai/dsh-client-ui-brand-official'

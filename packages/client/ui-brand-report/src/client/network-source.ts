@@ -19,16 +19,16 @@ export function createNetworkSource(fetcher: typeof fetch = fetch): NetworkSourc
     publish({ ...state, busy: true, error: false })
     try {
       const response = await fetcher('/api/report-network', { signal: control.signal,
-        ...enabled === undefined ? {} : { method: 'POST', headers: { 'Content-Type':'application/json', 'X-Requested-With':'ReportAgent' }, body:JSON.stringify({enabled}) } })
+        ...enabled === undefined ? {} : { method: 'POST', headers: { 'Content-Type':'application/json', 'X-Requested-With':'ReportAgent' }, body:JSON.stringify({ enabled }) } })
       if (!response.ok) throw new Error('Network preference unavailable')
       const value: unknown = await response.json()
-      if (!value || typeof value !== 'object' || typeof (value as {enabled?:unknown}).enabled !== 'boolean') throw new Error('Invalid preference')
-      publish({ enabled: (value as {enabled:boolean}).enabled, ready: true, busy: false, error: false })
+      if (!value || typeof value !== 'object' || typeof (value as { enabled?:unknown }).enabled !== 'boolean') throw new Error('Invalid preference')
+      publish({ enabled: (value as { enabled:boolean }).enabled, ready: true, busy: false, error: false })
     } catch { publish({ ...state, busy: false, error: true }) }
   }
   return {
     getSnapshot: () => state,
-    subscribe: notify => { listeners.add(notify); return () => { listeners.delete(notify) } },
+    subscribe: (notify) => { listeners.add(notify); return () => { listeners.delete(notify) } },
     refresh: () => request(),
     toggle: () => request(state.ready ? !state.enabled : undefined),
     close: () => { closed = true; control.abort(); listeners.clear() },

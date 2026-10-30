@@ -1,12 +1,19 @@
 /** Native human questions projected through one host-owned observable. */
 import type { HostObservable } from '@deepseek-ai/dsh-client-ui-slots'
+/** One question displayed by the native confirmation dialog. */
 export interface Question { id: string; question: string; options?: { label: string; description?: string }[]; multiSelect?: boolean }
+/** Pending request and its ordered question list. */
 export interface Pending { id: string; questions: Question[] }
+/** A submitted selection or custom answer. */
 export interface Answer { id: string; selected: string[]; custom?: string }
 interface Snapshot { pending: Pending[]; busy: boolean; error: boolean }
 interface Source extends HostObservable<Snapshot> { start(): () => void; answer(id: string, answers?: Answer[]): Promise<void> }
 
-/** Create one report question transport owner. @param fetcher - Same-origin fetch. @returns Observable and explicit human commands. */
+/**
+ * Create one report question transport owner.
+ * @param fetcher - Same-origin fetch.
+ * @returns Observable and explicit human commands.
+ */
 export function createQuestionSource(fetcher: typeof fetch = fetch): Source {
   let state: Snapshot = { pending: [], busy: false, error: false }
   const listeners = new Set<() => void>()
@@ -22,10 +29,14 @@ export function createQuestionSource(fetcher: typeof fetch = fetch): Source {
   }
   return {
     getSnapshot: () => state,
-    subscribe: notify => { listeners.add(notify); return () => { listeners.delete(notify) } },
+    subscribe: (notify) => { listeners.add(notify); return () => { listeners.delete(notify) } },
     start() {
       lifetime = new AbortController()
-      const refresh = () => { if (!state.busy) void request().catch(() => { if (!lifetime?.signal.aborted) publish({ ...state, error: true }) }) }
+      const refresh = () => {
+        if (!state.busy) void request().catch(() => {
+          if (!lifetime?.signal.aborted) publish({ ...state, error: true })
+        })
+      }
       refresh()
       const timer = window.setInterval(refresh, 900)
       return () => { window.clearInterval(timer); lifetime?.abort() }

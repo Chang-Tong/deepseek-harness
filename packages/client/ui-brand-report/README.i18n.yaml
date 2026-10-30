@@ -1,0 +1,40 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/client/ui-brand-report/README.md
+/:
+  en: 9c12280b2a63bd53
+  zh: 746a85bd80af5a0b
+/vendor-neutral-report-presentation:
+  en: de6ba5e69ad4a23b
+  zh: ff22f9abefbb445c
+/vendor-neutral-report-presentation/summary:
+  en: ccf58ef3c8a801f8
+  zh: de2789300314734c
+/vendor-neutral-report-presentation/table-of-contents:
+  en: b54bae4ec1ba0d98
+  zh: 29b53ecf91d00e1f
+/vendor-neutral-report-presentation/use:
+  en: 036567c31540ba85
+  zh: d630457eac5cc0de
+/vendor-neutral-report-presentation/model-experience:
+  en: 215e7ba838619b7b
+  zh: a311da3843709f90
+/vendor-neutral-report-presentation/model-experience/report-presentation-and-network-preference:
+  en: f62726c122863eef
+  zh: a60b508eecdf2851
+/vendor-neutral-report-presentation/model-experience/report-presentation-and-network-preference/what-the-model-sees:
+  en: 38ece12345b96285
+  zh: 0377d887af6df151
+/vendor-neutral-report-presentation/model-experience/report-presentation-and-network-preference/token-effect:
+  en: 1565a242caf2e405
+  zh: 8576155f18f5fe37
+/vendor-neutral-report-presentation/model-experience/report-presentation-and-network-preference/kv-cache-effect:
+  en: 0db16d53253bc636
+  zh: f45ad2c472b28994
+/vendor-neutral-report-presentation/known-limitations-and-deferred-work:
+  en: 31aa11ac448625c9
+  zh: 3e96d417e71c3c60
+/vendor-neutral-report-presentation/known-limitations-and-deferred-work/dev-note:
+  en: a5e46410d1b2454e
+  zh: dca4b6998086b974

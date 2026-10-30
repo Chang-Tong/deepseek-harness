@@ -231,4 +231,4 @@
   color: var(--dsw-alias-state-error-primary);
 }
 
-:global(html[data-report-brand='cmcc']) .previewBadge { display: none; }
+:global(html[data-report-brand='report']) .previewBadge { display: none; }

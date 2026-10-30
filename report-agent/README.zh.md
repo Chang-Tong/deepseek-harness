@@ -16,11 +16,11 @@
 
 保留原生模型设置：用户可以编辑地址、协议、API 密钥和模型目录，或添加自定义路由。输入框的模型选择也决定报告写作。重新生成预设时保留模型设置；原生凭据仍为只写，私有路由快照只保存引用，不复制密钥。隔离写作器每次使用当前凭据。
 
-预设只挂载自带的 report-drafting、content-planning、style-selection、visual-composition、presentation-skill、frontend-slides、image-sourcing 七组技能目录。流程为明确用途与读者、查资料及缺口、拟定大纲、选择移动蓝商务/杂志研究/深色科技样式。作用域内的 `report_ask_user` 调用原生 `userQuestions`，由经过认证的工作区弹窗接收隐藏群聊成员的提问；等待真实回答，没有倒计时，取消会结束等待。DS-Bot 的非阻塞提问工具不在目录中。shell 和通用文件系统工具继续禁用。
+预设只挂载自带的 report-drafting、content-planning、style-selection、visual-composition、presentation-skill、frontend-slides、image-sourcing 七组技能目录。流程为明确用途与读者、查资料及缺口、拟定大纲、选择蓝色商务/杂志研究/深色科技样式。作用域内的 `report_ask_user` 调用原生 `userQuestions`，由经过认证的工作区弹窗接收隐藏群聊成员的提问；等待真实回答，没有倒计时，取消会结束等待。DS-Bot 的非阻塞提问工具不在目录中。shell 和通用文件系统工具继续禁用。
 
 提交报告任务前，report_generate 直接等待原生 userQuestions 的真人回答，卡片展示标题、完整大纲和样式。只有明确批准才提交任务；选择修改、取消或尚未回答都不创建任务。等待用户不受写作超时限制，批准后才开始限时生成。提交后取消只停止等待，已提交报告仍保留。报告工具把当次请求的 provider/model 路由传给后台写作器。
 
-后端保存证据快照、任务、来源追溯、数字/引用检查与 Word/HTML/Markdown 导出及可选 PPTX、HTML 演示，仅对 draft_ready 返回链接。行业研究、工作汇报、年度总结、产品方案、竞品分析是内容结构；business 移动蓝商务、research 杂志研究、brief 深色科技会实际改变导出样式；Word 保留相应的文档格式。这些是通用模板，不代表已精确复刻上传的参考报告。
+后端保存证据快照、任务、来源追溯、数字/引用检查与 Word/HTML/Markdown 导出及可选 PPTX、HTML 演示，仅对 draft_ready 返回链接。行业研究、工作汇报、年度总结、产品方案、竞品分析是内容结构；business 蓝色商务、research 杂志研究、brief 深色科技会实际改变导出样式；Word 保留相应的文档格式。这些是通用模板，不代表已精确复刻上传的参考报告。
 
 ## 模型体验
 

@@ -4,8 +4,15 @@ interface Bot { id: string; sessionId: string; parts?: string[]; model?: string 
 interface Room { id: string; admin?: string }
 interface Model { ref: string; name: string; providerName?: string; needsKey?: boolean }
 interface Snapshot { bots: Bot[]; rooms: Room[]; models: Model[]; defaultModel?: string; busy: boolean; error: boolean }
-interface Source extends HostObservable<Snapshot> { refresh(): Promise<void>; select(bot: string, model: string): Promise<void>; close(): void }
-/** Create the shared provider metadata owner; credentials never enter this source. @returns Native model operations and observable. */
+interface Source extends HostObservable<Snapshot> {
+  refresh(): Promise<void>
+  select(bot: string, model: string): Promise<void>
+  close(): void
+}
+/**
+ * Create the shared provider metadata owner; credentials never enter this source.
+ * @returns Native model operations and observable.
+ */
 export function createModelSource(): Source {
   let state: Snapshot = { bots: [], rooms: [], models: [], busy: false, error: false }
   const controller = new AbortController(), listeners = new Set<() => void>()
@@ -24,7 +31,7 @@ export function createModelSource(): Source {
   }
   return {
     getSnapshot: () => state,
-    subscribe: notify => { listeners.add(notify); return () => { listeners.delete(notify) } },
+    subscribe: (notify) => { listeners.add(notify); return () => { listeners.delete(notify) } },
     refresh,
     async select(bot, model) {
       publish({ ...state, busy: true, error: false })

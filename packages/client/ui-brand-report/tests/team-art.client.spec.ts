@@ -6,7 +6,9 @@ describe('report team presentation and setup', () => {
   it('replaces every legacy mascot with bundled portraits and removes all registrations on disposal', () => {
     const releases: ReturnType<typeof vi.fn>[] = []
     const shapes: { id: string; body: string; size: number }[] = []
-    const theme = vi.fn((_id: string, _theme: Record<string, unknown>) => { const release = vi.fn(); releases.push(release); return release })
+    const theme = vi.fn((_id: string, _theme: Record<string, unknown>) => {
+      const release = vi.fn(); releases.push(release); return release
+    })
     const remove = registerReportArtwork({ shapes: () => ['whale', 'bunny', 'kitty'],
       registerShape: (id, shape) => { shapes.push({ id, body: shape.body('#000'), size: shape.size }); const release = vi.fn(); releases.push(release); return release }, registerTheme: theme }, 'data:image/png;base64,public')
     expect(shapes.map(shape => shape.id)).toContain('whale')

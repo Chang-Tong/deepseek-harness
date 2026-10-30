@@ -2760,9 +2760,9 @@ importers:
       '@deepseek-ai/dsh-client-ui-attachment':
         specifier: workspace:*
         version: link:../../client/ui-attachment
-      '@deepseek-ai/dsh-client-ui-brand-cmcc':
+      '@deepseek-ai/dsh-client-ui-brand-report':
         specifier: workspace:*
-        version: link:../../client/ui-brand-cmcc
+        version: link:../../client/ui-brand-report
       '@deepseek-ai/dsh-client-ui-brand-official':
         specifier: workspace:*
         version: link:../../client/ui-brand-official
@@ -3560,7 +3560,7 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
 
-  packages/client/ui-brand-cmcc:
+  packages/client/ui-brand-report:
     devDependencies:
       '@deepseek-ai/cordis':
         specifier: workspace:~

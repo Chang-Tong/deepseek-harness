@@ -1,11 +1,11 @@
 {
-  "name": "@deepseek-ai/dsh-client-ui-brand-cmcc",
-  "description": "China Mobile report-assistant brand occupants for the native Harness chat",
+  "name": "@deepseek-ai/dsh-client-ui-brand-report",
+  "description": "Generic report-assistant brand occupants for the native Harness chat",
   "version": "0.2.1-rc.4",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
-    "directory": "packages/client/ui-brand-cmcc"
+    "directory": "packages/client/ui-brand-report"
   },
   "type": "module",
   "main": "lib/index.js",

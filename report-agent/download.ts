@@ -13,6 +13,14 @@ export const Config: z<Config> = z.object({ apiUrl: z.string().required() })
 export function apply(ctx: Context, config: Config): void {
   const api = new URL(config.apiUrl)
   if (api.protocol !== 'http:' || !['127.0.0.1', 'localhost'].includes(api.hostname)) throw new Error('Report API must be loopback')
+  ctx.effect(() => ctx.connection.fetch.register({path:'/api/report-brand',methods:['GET'],requestBody:'buffered',
+    async fetch(request) {
+      const asset = new URL(request.url).searchParams.get('asset')
+      if (asset && !['logo', 'icon'].includes(asset)) return new Response('Invalid brand asset', {status:400})
+      const response = await fetch(`${api.origin}/api/report-brand${asset ? '?asset=' + asset : ''}`, {signal:request.signal})
+      return new Response(response.body, {status:response.status, headers:{'Content-Type':response.headers.get('Content-Type') ?? 'application/json', 'Cache-Control':'private, no-store', 'X-Content-Type-Options':'nosniff'}})
+    },
+  }), 'report: authenticated deployment artwork')
   ctx.effect(() => ctx.connection.fetch.register({
     path: '/api/report-download', methods: ['GET'], requestBody: 'buffered',
     async fetch(request) {
