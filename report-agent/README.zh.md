@@ -1,14 +1,12 @@
 # 对话式报告助手
 
-当前 fork 使用 Harness 0.2.1-rc.4 与独立固定的 DS-Bot 0.2.4。报告配置直接加载 DS-Bot，不加载其自动联网搜索包。默认主编、研究、撰稿、复核四个角色与主编统筹的报告工作组。每位成员继续受报告工具范围约束；shell、通用文件访问、浏览器与能力安装工具不可用。
-
-增量确认通过 `report_ask_user` 接回原生 `userQuestions`，由工作区统一弹窗等待真实答复，覆盖群聊隐藏成员会话。没有倒计时或自动选择；取消会结束等待。正式生成报告仍由 `report_generate` 单独请求最终真人确认。
-
 [English](README.md) | 中文
 
 这个可选的 Web 预设复用 Harness 原生输入框、附件、模型选择和 Session 历史，作为专用的有据问答助手：每个实质性问题先使用官方 `@wxg-prc-cpg/dsh-weknora@0.1.0` 的检索/阅读工具。此插件直接调用 WeKnora REST，不另加 MCP 包装。普通回复和活动卡片使用业务语言，原始工具记录仍保存在 Session 中。
 
 ## 运行
+
+当前 fork 使用 Harness 0.2.1-rc.4 与独立固定的 DS-Bot 0.2.4。报告配置直接加载 DS-Bot，不加载其自动联网搜索包。默认主编、研究、撰稿、复核四个角色与主编统筹的报告工作组。每位成员继续受报告工具范围约束；shell、通用文件访问、浏览器与能力安装工具不可用。
 
 先构建 [Harness 源码](../README.zh.md#run-from-source)，在 profile 中安装官方 WeKnora 插件，并在本机运行 [industry-report-agent 后端](https://github.com/Chang-Tong/industry-report-agent)。后端项目的启动器自动准备独立 profile、提供运行时凭据并打开认证聊天地址，也提供 Docker 镜像构建和离线导出说明。此 fork 不包含凭据和私人文档。
 
@@ -18,7 +16,7 @@
 
 保留原生模型设置：用户可以编辑地址、协议、API 密钥和模型目录，或添加自定义路由。输入框的模型选择也决定报告写作。重新生成预设时保留模型设置；原生凭据仍为只写，私有路由快照只保存引用，不复制密钥。隔离写作器每次使用当前凭据。
 
-预设只挂载自带的 report-drafting、content-planning、style-selection、visual-composition、presentation-skill、frontend-slides、image-sourcing 七组技能目录。流程为明确用途与读者、查资料及缺口、拟定大纲、选择移动蓝商务/杂志研究/深色科技样式。原生提问工具处理分步选择，已给出的信息不反复询问。shell 和通用文件系统工具继续禁用。
+预设只挂载自带的 report-drafting、content-planning、style-selection、visual-composition、presentation-skill、frontend-slides、image-sourcing 七组技能目录。流程为明确用途与读者、查资料及缺口、拟定大纲、选择移动蓝商务/杂志研究/深色科技样式。作用域内的 `report_ask_user` 调用原生 `userQuestions`，由经过认证的工作区弹窗接收隐藏群聊成员的提问；等待真实回答，没有倒计时，取消会结束等待。DS-Bot 的非阻塞提问工具不在目录中。shell 和通用文件系统工具继续禁用。
 
 提交报告任务前，report_generate 直接等待原生 userQuestions 的真人回答，卡片展示标题、完整大纲和样式。只有明确批准才提交任务；选择修改、取消或尚未回答都不创建任务。等待用户不受写作超时限制，批准后才开始限时生成。提交后取消只停止等待，已提交报告仍保留。报告工具把当次请求的 provider/model 路由传给后台写作器。
 
@@ -31,7 +29,7 @@
 ## 检查与限制
 
 ```sh
-node --import tsx/esm --test report-agent/api.test.ts report-agent/confirmation.test.ts report-agent/model-routes.test.ts
+node --import tsx/esm --test report-agent/*.test.ts
 node node_modules/typescript/bin/tsc -p report-agent/tsconfig.check.json
 ```
 
@@ -39,7 +37,7 @@ node node_modules/typescript/bin/tsc -p report-agent/tsconfig.check.json
 
 ## 可选联网
 
-输入框工具栏提供显式的联网搜索开关，每次进程启动默认关闭。宿主的传输门槛在关闭时阻止所有 web MCP 调用，关闭开关时传播取消信号。Harness 原生 MCP 桥接器以 stdio 运行固定版本的 [web-mcp](https://github.com/Chang-Tong/web-mcp)，开放搜索、网页抓取、图片候选提取和有限大小的 PNG/JPEG 下载，不增加端口或另一个摘要模型。宿主通过 report_network_status 提示词变量提供开关当前状态。
+输入框工具栏提供显式的联网搜索开关，默认关闭，用户明确选择后保存到私有偏好文件，重启保留。宿主的传输门槛在关闭时阻止所有 web MCP 调用，关闭开关时传播取消信号。Harness 原生 MCP 桥接器以 stdio 运行固定版本的 [web-mcp](https://github.com/Chang-Tong/web-mcp)，开放搜索、网页抓取、图片候选提取和有限大小的 PNG/JPEG 下载，不增加端口或另一个摘要模型。宿主通过 report_network_status 提示词变量提供开关当前状态。
 
 开启后仍先查 WeKnora，再补充公开资料。只有实际读取、且被选入当前报告的网页正文才进入证据快照，不能只凭搜索摘要写报告。原始 URL、采集时间和文本哈希保留。随应用打包的抓取适配器拒绝内网目标与重定向。开关由此单用户运行实例共享，不是按用户隔离的权限系统；界面在获得焦点时刷新状态。
 

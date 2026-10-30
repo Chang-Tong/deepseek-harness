@@ -29,7 +29,7 @@ The report persona, compact skill catalog and registered tools shape model reque
 ## Checks and limits
 
 ```sh
-node --import tsx/esm --test report-agent/api.test.ts report-agent/confirmation.test.ts report-agent/model-routes.test.ts
+node --import tsx/esm --test report-agent/*.test.ts
 node node_modules/typescript/bin/tsc -p report-agent/tsconfig.check.json
 ```
 
@@ -37,7 +37,7 @@ Focused tests cover polling, failure, cancellation, attachment confinement, pars
 
 ## Optional networking
 
-The input toolbar provides an explicit Web search switch, initially closed on every process start. A host transport gate blocks every web MCP call while closed and propagates cancellation when disabled. The official Harness MCP bridge runs a pinned [web-mcp](https://github.com/Chang-Tong/web-mcp) stdio server exposing search, page fetch, image discovery and bounded PNG/JPEG download; no new port or secondary summarization model is required. The host contributes current switch status through the report_network_status prompt variable.
+The input toolbar provides an explicit Web search switch, closed by default, with explicit user choices retained in a private preference file across restarts. A host transport gate blocks every web MCP call while closed and propagates cancellation when disabled. The official Harness MCP bridge runs a pinned [web-mcp](https://github.com/Chang-Tong/web-mcp) stdio server exposing search, page fetch, image discovery and bounded PNG/JPEG download; no new port or secondary summarization model is required. The host contributes current switch status through the report_network_status prompt variable.
 
 When enabled, the assistant still queries WeKnora first and can supplement it with public sources. Only actually fetched page bodies selected for the current report enter its evidence snapshot; a search snippet alone is insufficient. Original URLs, capture times and text hashes are retained. Private network destinations and redirects are rejected by the bundled fetch adapter. The switch is shared across this single-user runtime; it is not a per-user permission system. The UI refreshes its state on focus.
 
