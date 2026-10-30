@@ -1,0 +1,23 @@
+{
+  "package": "lucide-static",
+  "version": "1.64.0",
+  "url": "https://lucide.dev",
+  "license": "ISC",
+  "integrity": "sha512-UxWmMteOXbKHI5E4f2qVtxCAAsI9gsInYK1lNw0nrOA0w4FkJeOVZ+UOV6aGA2377FZe3qyiFYq3lqjBKZ6OuA==",
+  "icons": [
+    "briefcase-business",
+    "search",
+    "file-pen-line",
+    "shield-check",
+    "chart-no-axes-combined",
+    "calendar-check",
+    "presentation",
+    "boxes",
+    "git-compare-arrows",
+    "users-round",
+    "globe",
+    "arrow-up-right",
+    "sparkles",
+    "settings"
+  ]
+}

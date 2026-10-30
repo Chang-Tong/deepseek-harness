@@ -15,6 +15,7 @@
       "node"
     ],
     "paths": {
+      "@deepseek-ai/dsh-skill": ["../packages/skill/skill/lib/types/index.d.ts"],
       "@deepseek-ai/cordis": [
         "../vendor/cordis/lib/types/index.d.ts"
       ],

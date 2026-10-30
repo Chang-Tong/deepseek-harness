@@ -15,21 +15,25 @@ export function reportOverlay(options) {
     { id: 'ui-brand-cmcc', disabled: false },
     { id: 'locale', config: { preference: 'zh' } },
     { insert: [
-      { id: 'report-network', name: resolve(pluginDirectory, 'network.' + (options.pluginExtension ?? 'ts')) },
+      { id: 'report-team-artwork', name: resolve(pluginDirectory, 'artwork.' + (options.pluginExtension ?? 'ts')) },
+      { id: 'report-human-questions', name: resolve(pluginDirectory, 'questions.' + (options.pluginExtension ?? 'ts')) },
+      { id: 'report-team', name: 'ds-bot', config: { mainName: '报告主编', mainRole: '统筹与交付', browser: false, learning: false, agentsMd: false, memoryReview: false, updateCheck: false, github: false } },
+      { id: 'report-network', name: resolve(pluginDirectory, 'network.' + (options.pluginExtension ?? 'ts')), config: { statePath: resolve(options.attachments, '../../..', 'report-network.json') } },
       { id: 'web-mcp', name: '@deepseek-ai/dsh-mcp-client', config: { serverName: 'web', transport: 'stdio', command: 'node', args: [resolve(options.webMcp ?? resolve(options.workspace, 'vendor/web-mcp'), 'src/index.mjs')], cwd: resolve(options.webMcp ?? resolve(options.workspace, 'vendor/web-mcp')), env: { WEB_MCP_TOOLS: 'web_search,fetch_page,find_images,fetch_image', WEB_MCP_ASSET_DIR: resolve(options.attachments, '../../..', 'report-images'), WEB_MCP_ENABLE_BROWSER: '0', WEB_MCP_TIME_BOX: '10000', WEB_MCP_MAX_CHARS: '8000', WEB_MCP_LOG_DIR: resolve(options.attachments, '../../..', 'web-search-logs') }, toolCallTimeoutMs: 30000 } },
       { id: 'report-downloads', name: resolve(pluginDirectory, 'download.' + (options.pluginExtension ?? 'ts')), config: { apiUrl: options.apiUrl } },
       { id: 'report-workspace', name: resolve(pluginDirectory, 'workspace.' + (options.pluginExtension ?? 'ts')), config: { directory: options.workspace } },
       { id: 'preset-report', name: '@deepseek-ai/dsh-agent-preset', config: { id: 'report', order: 0, plugins: [
-        { id: 'persona', name: '@deepseek-ai/dsh-persona', config: { prefix: persona, complete: true, includeRuntimeContext: false } },
+        { id: 'report-team-policy', name: resolve(pluginDirectory, 'team-policy.' + (options.pluginExtension ?? 'ts')) },
+        { id: 'persona', name: '@deepseek-ai/dsh-persona', config: { prefix: persona.replaceAll('ask_user_question', 'report_ask_user'), complete: false, includeRuntimeContext: false } },
         { id: 'report-skills', name: '@deepseek-ai/dsh-skill-filesystem', config: { providerName: 'report-skills', includeDefaultRoots: false, customSkillDirs: [resolve(pluginDirectory, 'skills')], watch: false } },
         { id: 'report-skill-loader', name: '@deepseek-ai/dsh-tool-skill' },
-        { id: 'report-questions', name: '@deepseek-ai/dsh-tool-ask-user' },
+        { id: 'report-questions', name: resolve(pluginDirectory, 'ask.' + (options.pluginExtension ?? 'ts')) },
         { id: 'report-tools', name: resolve(pluginDirectory, 'plugin.' + (options.pluginExtension ?? 'ts')), config: { apiUrl: options.apiUrl, publicUrl: options.publicUrl ?? 'http://127.0.0.1:18085',
           attachmentsDirectory: options.attachments, modelRoutesDirectory: resolve(options.attachments, '../../..', 'report-model-routes'), pollIntervalMs: 1000, timeoutMs: 240000, maxUploadBytes: 33554432 } },
       ] } },
     ] },
     { id: 'ui-settings-models', disabled: false },
-    ...['ui-permission', 'ui-plan', 'ui-goal', 'ui-agent-preset', 'ui-open-in-app', 'ui-plugin-manager', 'ui-cordis', 'ui-trajectory'].map(id => ({ id, disabled: true })),
+    ...['ui-permission', 'ui-plan', 'ui-goal', 'ui-agent-preset', 'ui-open-in-app', 'ui-plugin-manager', 'entry-customization', 'ui-cordis', 'ui-trajectory'].map(id => ({ id, disabled: true })),
   ]
 }
 
